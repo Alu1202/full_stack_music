@@ -1,0 +1,18 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: music_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: music_database
+      MYSQL_USER: music_user
+      MYSQL_PASSWORD: music_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+      - ./init:/docker-entrypoint-initdb.d
+      - ./csv_data:/csv_data
+    command: >
+      --local-infile=1
+      --secure-file-priv=/csv_data
