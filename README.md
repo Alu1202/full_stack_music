@@ -25,7 +25,7 @@ It uses the BLoC pattern for state management.
 
 ## Demo Video
 
-[![Watch the video](Recodings.mov)]
+[![Watch the video](https://github.com/Alu1202/full_stack_music/blob/main/Recodings.mov)]
 
 
 
