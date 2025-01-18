@@ -23,9 +23,9 @@ It uses the BLoC pattern for state management.
 - The back end is built with Node.js, Express, and MySQL.
 - It uses a dataset sourced from Kaggle.
 
-## Demo Video
 
-[![Watch the video](https://github.com/Alu1202/full_stack_music/blob/main/Recodings.mp4)]
+
+
 
 
 
