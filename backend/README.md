@@ -1,6 +1,9 @@
-# Full Stack Music Backend
+## Author
+Alekh Agrawal  [https://www.linkedin.com/in/alekh-agrawal-2b1366191/]
 
-Welcome to the Full Stack Music Backend project. This project provides a RESTful API for managing and retrieving music data.
+# Music DB Backend
+
+This project provides a RESTful API for  retrieving music data.
 
 ## Table of Contents
 - [Music API](#music-api)
@@ -18,9 +21,9 @@ This project uses the following technologies:
 - Express
 - MySQL
 - Docker
+- Nodemon
 
-## Author
-Alekh Agrawal
+
 
 ## API Endpoints
 - `GET /api/statistics` - Retrieve static filter options
@@ -55,9 +58,6 @@ This project uses the following technologies:
 - Express
 - MySQL
 - Docker
-
-## Author
-Alekh Agrawal
 
 ## API Endpoints
 - `GET /api/statistics` - Retrieve static filter options

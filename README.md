@@ -1,6 +1,5 @@
-# Author
-Alekh Agrawal
-
+## Author
+Alekh Agrawal  [https://www.linkedin.com/in/alekh-agrawal-2b1366191/]
 ## Project Overview
 Full Stack Demonstration (Flutter & Node.JS)
 
@@ -26,7 +25,7 @@ It uses the BLoC pattern for state management.
 
 ## Demo Video
 
-[![Watch the video](Recording.mov)]
+[![Watch the video](https://drive.google.com/file/d/12qrtEtPfk1N0BfxEGcH6RkpKu8uu16Kt/view?usp=sharing)]
 
 
 
@@ -36,7 +35,7 @@ It uses the BLoC pattern for state management.
 ## Instruction
 Follow these Step to Run and Test
 # Backend
-    cd to backend/
+    cd backend
 
 # MySql Set up
     docker-compose up
@@ -45,11 +44,9 @@ Follow these Step to Run and Test
     nodemon start
 
 # Flutter App
-    cd ~
-    
-    cd /front_end
-    
-    F5 
-This will start app for either Device ios/Android
+    cd ~ 
+    cd front_end
+    flutter run
+This will start app for either device ios/Android
 
 
