@@ -23,10 +23,11 @@ class KpiDashboardCubit extends Cubit<KpiDashboardState> {
   int? duration;
   final durationList = List.generate(20, (index) => (index + 1) * 20);
   FilterData? filterData;
-  double? popularity;
+  double? minPopularity,maxPopularity;
+  
   final TextEditingController trackNameController = TextEditingController();
   final List<Track> tracks = [];
-  double? yearRange;
+  double? maxYearRange,minYearRange;
 
   Future<void> fetchFilters() async {
     try {
@@ -43,8 +44,9 @@ class KpiDashboardCubit extends Cubit<KpiDashboardState> {
     emit(KpiDashboardLoading());
     try {
       final filterMap = SearchRequestModel(
-        yearRange: yearRange,
-        popularity: popularity,
+        minYearRange: maxYearRange,
+        maxYearRange: maxYearRange,
+        popularity: minPopularity,
         trackName: track,
         artistName: artist,
         duration: duration,
@@ -72,23 +74,24 @@ class KpiDashboardCubit extends Cubit<KpiDashboardState> {
     return trackName = trackNameController.text;
   }
 
-  void updateYearRange(double? yearRange) {
-    this.yearRange = yearRange;
+  void updateYearRange(RangeValues value) {
+    minYearRange = value.start;
+    maxYearRange=value.end;
     emit(
       KpiDashboardSliderUpdated(
-        popularity: popularity ?? filterData?.minPopularity.toDouble() ?? 0.0,
-        yearRange: this.yearRange ?? 0,
+        popularity: minPopularity ?? filterData?.minPopularity.toDouble() ?? 0.0,
+        yearRange: maxYearRange ?? 0,
       ),
     );
   }
 
   void updatePopularity(double? popularity) {
-    this.popularity = popularity;
+    minPopularity = popularity;
     emit(
       KpiDashboardSliderUpdated(
         popularity:
-            this.popularity ?? filterData?.minPopularity.toDouble() ?? 0.0,
-        yearRange: yearRange ?? filterData?.minYear.toDouble() ?? 0.0,
+            minPopularity ?? filterData?.minPopularity.toDouble() ?? 0.0,
+        yearRange: maxYearRange ?? filterData?.minYear.toDouble() ?? 0.0,
       ),
     );
   }
@@ -108,8 +111,9 @@ class KpiDashboardCubit extends Cubit<KpiDashboardState> {
 
   void resetAndSearch() async {
     duration = null;
-    yearRange = null;
-    popularity = null;
+    minYearRange = null;
+    maxYearRange = null;
+    minPopularity = null;
     trackName = null;
     artistName = null;
     duration = null;

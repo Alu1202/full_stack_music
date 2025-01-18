@@ -1,6 +1,7 @@
 class SearchRequestModel {
   SearchRequestModel({
-    this.yearRange,
+    this.minYearRange,
+    this.maxYearRange,
     this.popularity,
     this.trackName,
     this.artistName,
@@ -11,23 +12,27 @@ class SearchRequestModel {
   int? duration;
   double? popularity;
   String? trackName;
-  double? yearRange;
+  double? minYearRange,maxYearRange;
 
   void reset() {
-    yearRange = null;
+    minYearRange = null;
     popularity = null;
     trackName = null;
     artistName = null;
     duration = null;
+    maxYearRange = null;
+  
   }
 
   Map<String, String> toFilterMap() {
     final Map<String, String> filterMap = {};
-    if (yearRange != null) filterMap['yearRange'] = yearRange.toString();
+    if (minYearRange != null) filterMap['startYear'] = minYearRange!.floor().toString();
+    if (maxYearRange != null) filterMap['endYear'] = maxYearRange!.floor().toString();
     if (popularity != null) filterMap['popularity'] = popularity.toString();
     if (trackName != null) filterMap['trackName'] = trackName.toString();
     if (artistName != null) filterMap['artistName'] = artistName.toString();
     if (duration != null) filterMap['duration'] = (duration!*1000).toString();
+   
     return filterMap;
   }
 }

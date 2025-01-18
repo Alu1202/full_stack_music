@@ -15,9 +15,7 @@ class KpiDashboardScreen extends StatelessWidget {
 
   Widget _buildSearchForm(BuildContext context) {
     return Builder(
-      builder: (
-        context,
-      ) {
+      builder: (context) {
         final cubit = context.read<KpiDashboardCubit>();
 
         return Column(
@@ -34,8 +32,12 @@ class KpiDashboardScreen extends StatelessWidget {
                 if (filterData != null) {
                   return Column(
                     children: [
-                      YearRangeDragger(filterData: filterData),
-                      PopularityDragger(filterData: filterData),
+                      YearRangeDragger(
+                        filterData: filterData,
+                      ),
+                      PopularityDragger(
+                        filterData: filterData,
+                      ),
                     ],
                   );
                 } else {
@@ -64,9 +66,7 @@ class KpiDashboardScreen extends StatelessWidget {
                 context.read<KpiDashboardCubit>().updateArtistName(value);
               },
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             BlocBuilder<KpiDashboardCubit, KpiDashboardState>(
               buildWhen: (previous, current) => current is DurationChanged,
               builder: (context, state) {
@@ -75,7 +75,9 @@ class KpiDashboardScreen extends StatelessWidget {
                   menuMaxHeight: MediaQuery.of(context).size.height * 0.3,
                   value: context.read<KpiDashboardCubit>().duration,
                   isExpanded: true,
-                  hint: const Text(Labels.selectDuration),
+                  hint: const Text(
+                    Labels.selectDuration,
+                  ),
                   items: context
                       .read<KpiDashboardCubit>()
                       .durationList
@@ -106,15 +108,23 @@ class KpiDashboardScreen extends StatelessWidget {
                       child: const Row(
                         children: [
                           Icon(Icons.search),
-                          SizedBox(width: 8),
-                          Text('Search'),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Text(
+                            'Search',
+                          ),
                         ],
                       ),
                     ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    if (!hasData)
+                    const SizedBox(width: 10),
+                    if (!hasData ||
+                        BlocProvider.of<KpiDashboardCubit>(context)
+                                .maxYearRange !=
+                            null ||
+                        BlocProvider.of<KpiDashboardCubit>(context)
+                                .minPopularity !=
+                            null)
                       TextButton(
                         onPressed: () {
                           cubit.resetAndSearch();
@@ -182,7 +192,7 @@ class KpiDashboardScreen extends StatelessWidget {
 
   Widget _buildLabelColumn(String label, String value) {
     return Container(
-      color: Colors.green.withOpacity(0.7),
+      color: const Color.fromARGB(255, 1, 111, 5).withOpacity(0.7),
       padding: const EdgeInsets.all(8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,7 +204,7 @@ class KpiDashboardScreen extends StatelessWidget {
           ),
           Container(
             width: double.maxFinite,
-            color: Colors.green,
+            color: const Color.fromARGB(255, 61, 100, 62),
             padding: const EdgeInsets.all(8.0),
             child: Text(value),
           ),
@@ -205,175 +215,226 @@ class KpiDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(Labels.kpiDashboard),
-      ),
-      body: BlocProvider(
-        create: (context) => KpiDashboardCubit(),
-        child: BlocListener<KpiDashboardCubit, KpiDashboardState>(
-          listener: (context, state) async {
-            if (state is KpiDashboardError) {
-              await Navigator.of(context)
-                  .push<bool>(MaterialPageRoute(
-                builder: (context) => ErrorScreen(state.exception),
-              ))
-                  .then((value) {
-                if (value ?? false) {
-                  context.read<KpiDashboardCubit>()
-                    ..fetchFilters()
-                    ..fetchData();
-                }
-              });
-            }
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    ExpansionTile(
-                      tilePadding: EdgeInsets.zero,
-                      title: const Text('Search Filters'),
+    return BlocProvider(
+      create: (context) => KpiDashboardCubit(),
+      child: Builder(builder: (context) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text(Labels.kpiDashboard),
+            centerTitle: false,
+            actions: [
+              _buildDownloadButton(context),
+            ],
+          ),
+          body: BlocListener<KpiDashboardCubit, KpiDashboardState>(
+            listener: (context, state) async {
+              if (state is KpiDashboardError) {
+                await Navigator.of(context)
+                    .push<bool>(MaterialPageRoute(
+                  builder: (context) => ErrorScreen(state.exception),
+                ))
+                    .then((value) {
+                  if (value ?? false) {
+                    context.read<KpiDashboardCubit>()
+                      ..fetchFilters()
+                      ..fetchData();
+                  }
+                });
+              }
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return ConstrainedBox(
+                    constraints: constraints,
+                    child: Column(
                       children: [
-                        _buildSearchForm(context),
+                        ExpansionTile(
+                          tilePadding: EdgeInsets.zero,
+                          title: const Text('Search Filters'),
+                          children: [
+                            _buildSearchForm(context),
+                          ],
+                        ),
                         const SizedBox(height: 20),
                         _buildLabelsSection(),
+                        const SizedBox(height: 20),
+                        const Expanded(
+                          child: AlbumListView(),
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                    const TabularSheet(),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 }
 
-class TabularSheet extends StatelessWidget {
-  const TabularSheet({
-    super.key,
-  });
+class AlbumListView extends StatelessWidget {
+  const AlbumListView({super.key});
 
-  Future<bool> _requestPermission() async {
-    if (Platform.isIOS) {
-      return true;
-    }
-    if (await Permission.manageExternalStorage.isGranted) {
-      return true;
-    } else {
-      final result = await Permission.manageExternalStorage.request();
-      if (result.isGranted) {
-        return true;
-      } else if (result.isDenied || result.isPermanentlyDenied) {
-        openAppSettings();
-        return false;
-      }
-      return false;
-    }
-  }
-
-  Widget _buildDownloadButton(BuildContext context) {
-    return TextButton(
-      onPressed: () async {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return const Dialog(
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(width: 20),
-                    Text("Downloading..."),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-        await _requestPermission().then((value) async {
-          if (value) {
-            final cubit = context.read<KpiDashboardCubit>();
-            await cubit.exportToCsv().then((value) {
-              if (value.isNotEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<KpiDashboardCubit, KpiDashboardState>(
+      buildWhen: (previous, current) =>
+          current is KpiDashboardDataLoaded || current is KpiDashboardLoading,
+      builder: (context, state) {
+        if (state is KpiDashboardDataLoaded && state is! KpiDashboardLoading) {
+          return Scrollbar(
+            child: ListView.builder(
+              padding: const EdgeInsets.only(right: 12),
+              itemCount: state.data.length,
+              itemBuilder: (context, index) {
+                final track = state.data[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: ListTile(
+                    leading: const Icon(Icons.music_note_outlined, size: 30),
+                    title: Text(
+                      '${track.trackName} (${track.year})',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Text(
+                      'Duration: ${track.duration}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    trailing: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
-                          Labels.exportSuccessMessage,
-                        ),
+                        const Icon(Icons.favorite_outlined, size: 20),
                         const SizedBox(width: 8),
-                        TextButton(
-                          onPressed: () async {
-                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                            await OpenFilex.open(value);
-                          },
-                          child: const Row(
-                            children: [
-                              Icon(Icons.open_in_new),
-                              Text(
-                                'Open',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
+                        Text(
+                          track.popularity.toString(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                   ),
                 );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      Labels.exportErrorMessage,
-                    ),
-                  ),
-                );
-              }
-            });
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  Labels.permissionErrorMessage,
-                ),
-              ),
-            );
-          }
-        }).whenComplete(() {
-          Navigator.of(context).pop();
-        });
+              },
+            ),
+          );
+        }
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
       },
-      child: const Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            Labels.downloadCsv,
-          ),
-          SizedBox(width: 8),
-          Icon(
-            Icons.download,
-            size: 18,
-          ),
-        ],
-      ),
     );
   }
+}
+
+Future<bool> _requestPermission() async {
+  if (Platform.isIOS) {
+    return true;
+  }
+  if (await Permission.manageExternalStorage.isGranted) {
+    return true;
+  } else {
+    final result = await Permission.manageExternalStorage.request();
+    if (result.isGranted) {
+      return true;
+    } else if (result.isDenied || result.isPermanentlyDenied) {
+      openAppSettings();
+      return false;
+    }
+    return false;
+  }
+}
+
+Widget _buildDownloadButton(BuildContext context) {
+  return TextButton(
+    onPressed: () async {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Dialog(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(width: 20),
+                  Text("Downloading..."),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+      await _requestPermission().then((value) async {
+        if (value) {
+          final cubit = context.read<KpiDashboardCubit>();
+          await cubit.exportToCsv().then((value) {
+            if (value.isNotEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(Labels.exportSuccessMessage),
+                      const SizedBox(width: 8),
+                      TextButton(
+                        onPressed: () async {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          await OpenFilex.open(value);
+                        },
+                        child: const Row(
+                          children: [
+                            Icon(Icons.open_in_new),
+                            Text(
+                              'Open',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(Labels.exportErrorMessage),
+                ),
+              );
+            }
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(Labels.permissionErrorMessage),
+            ),
+          );
+        }
+      }).whenComplete(() {
+        Navigator.of(context).pop();
+      });
+    },
+    child: const Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(Labels.downloadCsv),
+        SizedBox(width: 8),
+        Icon(Icons.download, size: 18),
+      ],
+    ),
+  );
+}
+
+class TabularSheet extends StatelessWidget {
+  const TabularSheet({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -495,10 +556,7 @@ class TabularSheet extends StatelessWidget {
 }
 
 class PopularityDragger extends StatelessWidget {
-  const PopularityDragger({
-    super.key,
-    required this.filterData,
-  });
+  const PopularityDragger({super.key, required this.filterData});
 
   final FilterData filterData;
 
@@ -514,9 +572,7 @@ class PopularityDragger extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              child: Text(
-                '${filterData.minPopularity}',
-              ),
+              child: Text('${filterData.minPopularity}'),
             ),
             Expanded(
               flex: 8,
@@ -525,14 +581,14 @@ class PopularityDragger extends StatelessWidget {
                     current is KpiDashboardSliderUpdated,
                 builder: (context, state) {
                   return Slider(
-                    value: context.read<KpiDashboardCubit>().popularity ??
+                    value: context.read<KpiDashboardCubit>().minPopularity ??
                         filterData.minPopularity.toDouble(),
                     min: filterData.minPopularity.toDouble(),
                     max: filterData.maxPopularity.toDouble(),
                     divisions:
                         filterData.maxPopularity - filterData.minPopularity,
                     label:
-                        '${context.read<KpiDashboardCubit>().popularity?.toInt() ?? filterData.minPopularity}',
+                        '${context.read<KpiDashboardCubit>().minPopularity?.toInt() ?? filterData.minPopularity}',
                     onChanged: (value) {
                       context.read<KpiDashboardCubit>().updatePopularity(value);
                     },
@@ -541,9 +597,7 @@ class PopularityDragger extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: Text(
-                '${filterData.maxPopularity}',
-              ),
+              child: Text('${filterData.maxPopularity}'),
             ),
           ],
         ),
@@ -553,10 +607,7 @@ class PopularityDragger extends StatelessWidget {
 }
 
 class YearRangeDragger extends StatelessWidget {
-  const YearRangeDragger({
-    super.key,
-    required this.filterData,
-  });
+  const YearRangeDragger({super.key, required this.filterData});
 
   final FilterData filterData;
 
@@ -572,9 +623,7 @@ class YearRangeDragger extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              child: Text(
-                '${filterData.minYear}',
-              ),
+              child: Text('${filterData.minYear}'),
             ),
             Expanded(
               flex: 8,
@@ -582,14 +631,19 @@ class YearRangeDragger extends StatelessWidget {
                 buildWhen: (previous, current) =>
                     current is KpiDashboardSliderUpdated,
                 builder: (context, state) {
-                  return Slider(
-                    value: context.read<KpiDashboardCubit>().yearRange ??
-                        filterData.minYear.toDouble(),
+                  return RangeSlider(
+                    values: RangeValues(
+                        context.read<KpiDashboardCubit>().minYearRange ??
+                            filterData.minYear.toDouble(),
+                        context.read<KpiDashboardCubit>().maxYearRange ??
+                            filterData.maxYear.toDouble()),
                     min: filterData.minYear.toDouble(),
                     max: filterData.maxYear.toDouble(),
                     divisions: filterData.maxYear - filterData.minYear,
-                    label:
-                        '${context.read<KpiDashboardCubit>().yearRange?.toInt() ?? filterData.minYear}',
+                    labels: RangeLabels(
+                      '${context.read<KpiDashboardCubit>().minYearRange?.toInt() ?? filterData.minYear}',
+                      '${context.read<KpiDashboardCubit>().maxYearRange?.toInt() ?? filterData.maxYear}',
+                    ),
                     onChanged: (value) {
                       context.read<KpiDashboardCubit>().updateYearRange(value);
                     },
@@ -598,9 +652,7 @@ class YearRangeDragger extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: Text(
-                '${filterData.maxYear}',
-              ),
+              child: Text('${filterData.maxYear}'),
             ),
           ],
         ),
