@@ -46,7 +46,9 @@ Follow these Step to Run and Test
 
 # Flutter App
     cd ~
+    
     cd /front_end
+    
     F5 
 This will start app for either Device ios/Android
 
