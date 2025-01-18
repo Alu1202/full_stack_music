@@ -4,17 +4,15 @@ A new Flutter project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
+- This is a Project to demonstrate Full Stack Development
+- Features
+    1. Search all music tracks
+    2. Filter and Search
+    3. Demonstrate BloC State Management
+    4. Demonstrate MySQl & Sql Queries
+    5. Demonstrate Cross-Platform Development for ios & Android
+    6. Handling File System
+    
 ## Flutter Version
 
 - Flutter SDK: `3.19.6`
@@ -33,5 +31,19 @@ samples, guidance on mobile development, and a full API reference.
 - The dataset used for tracks is sourced from Kaggle.
 
 ## Author
-
 - Alekh Agrawal
+
+### Instruction:
+- cd to Backend/
+# MySql Set up
+- docker-compose up
+
+# API Set Up
+- nodemon start
+
+# Flutter App
+- cd /FRONT_END
+- F5 or flutter run 
+- This will start app for either Device ios/Android
+
+
