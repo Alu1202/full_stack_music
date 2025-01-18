@@ -10,3 +10,7 @@
 ## Back End
 - The back end is built with Node.js, Express, and MySQL.
 - It uses a dataset sourced from Kaggle.
+
+## Demo Video
+
+[![Watch the video](Recording.mov)]
