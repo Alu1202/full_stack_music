@@ -25,7 +25,7 @@ It uses the BLoC pattern for state management.
 
 ## Demo Video
 
-[![Watch the video](https://drive.google.com/file/d/12qrtEtPfk1N0BfxEGcH6RkpKu8uu16Kt/view?usp=sharing)]
+[![Watch the video](Recodings.mov)]
 
 
 
